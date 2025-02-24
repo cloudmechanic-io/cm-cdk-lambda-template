@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { CmCdkLambdaTemplateStack } from '../lib/cm-cdk-lambda-template-stack';
+import {CmCdkLambdaTemplateStack} from "../lib/infrastructure/cm-cdk-lambda-template-stack";
 
 const app = new cdk.App();
 new CmCdkLambdaTemplateStack(app, 'CmCdkLambdaTemplateStack', {
