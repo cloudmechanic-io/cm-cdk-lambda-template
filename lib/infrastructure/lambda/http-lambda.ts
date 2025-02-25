@@ -79,14 +79,12 @@ export function createHTTPLambda(params: HTTPLambdaParams) {
         code: lambda.Code.fromAsset(codeFolder || __dirname),
     });
 
-    // Split path and add each segment as a resource
     const pathSegments = endpointPath.split("/").filter(Boolean);
     let resource = api.root;
     pathSegments.forEach(segment => {
         resource = resource.addResource(segment);
     });
 
-    // Attach the specified HTTP method (or "ANY") to the API Gateway resource
     resource.addMethod(method, new apigw.LambdaIntegration(lambdaFn));
 
     return { lambdaFn };
