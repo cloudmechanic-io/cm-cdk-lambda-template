@@ -23,7 +23,8 @@
       "privateSubnet1": "subnet-094fb3b14d5cc4df0",
       "privateSubnet2": "subnet-036bce814c61d26a4",
       "lambdaEnvironmentVariables": {
-        "TESTERICA": "Uhuhuuuu"
+        "TESTERICA": "Uhuhuuuu",
+
       }
     },
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,

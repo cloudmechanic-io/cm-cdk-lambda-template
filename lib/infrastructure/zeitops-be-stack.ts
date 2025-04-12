@@ -6,6 +6,7 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 
 import {helloWorld} from "../src/functions/hello-world";
 import {LambdaParams} from "./lambda/types";
+import {dbMigrations} from "../src/functions/db-migrations";
 
 export class ZeitOpsBeStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -13,6 +14,7 @@ export class ZeitOpsBeStack extends cdk.Stack {
         const lambdaParams = this.configureLambdaParams("ZeitOpsBe");
 
         helloWorld(lambdaParams);
+        dbMigrations(lambdaParams);
     }
 
     private configureLambdaParams(serviceName: string): LambdaParams {

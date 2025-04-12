@@ -61,3 +61,14 @@ enum Stage {
   live = "live",
   test = "test",
 }
+
+export function getEnvironmentVariables(): EnvironmentVariables {
+  return process.env as any as EnvironmentVariables;
+}
+export interface EnvironmentVariables {
+  DB_URL: string;
+  DB_USERNAME: string;
+  DB_PASSWORD: string;
+  DB_NAME: string;
+  TESTERICA: string;
+}
