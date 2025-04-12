@@ -1,14 +1,12 @@
 {
-  "name": "cm-cdk-lambda-template",
+  "name": "zeitops-be",
   "version": "0.1.0",
   "bin": {
-    "cm-cdk-lambda-template": "bin/cm-cdk-lambda-template.js"
+    "main": "bin/main.js"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "jest",
-    "cdk": "cdk"
+    "bootstrap:dev": "cdk bootstrap --profile pp-deployer --context stage=dev --region eu-central-1",
+    "deploy:dev": "cdk deploy --context stage=dev --profile pp-deployer"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.147",
@@ -16,6 +14,7 @@
     "@types/lodash.camelcase": "^4.3.9",
     "@types/node": "22.7.9",
     "aws-cdk": "2.1000.2",
+    "esbuild": "^0.25.2",
     "jest": "^29.7.0",
     "lodash.camelcase": "^4.3.0",
     "ts-jest": "^29.2.5",
@@ -23,7 +22,12 @@
     "typescript": "~5.6.3"
   },
   "dependencies": {
+    "@aws-sdk/util-dynamodb": "^3.788.0",
+    "@middy/core": "^6.1.6",
+    "@middy/http-json-body-parser": "^6.1.6",
     "aws-cdk-lib": "2.179.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "lodash.chunk": "^4.2.0",
+    "uuid": "^11.1.0"
   }
 }

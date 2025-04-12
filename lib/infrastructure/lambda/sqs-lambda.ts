@@ -4,6 +4,7 @@ import * as lambdaEventSources from "aws-cdk-lib/aws-lambda-event-sources";
 import { Construct } from "constructs";
 import path from "path";
 import lodashCamelCase from "lodash.camelcase";
+import * as iam from "aws-cdk-lib/aws-iam";
 
 /**
  * Parameters for creating a Lambda function that processes messages from an existing SQS queue.

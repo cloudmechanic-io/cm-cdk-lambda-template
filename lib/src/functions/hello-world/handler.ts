@@ -1,23 +1,14 @@
-import {APIGatewayProxyEvent} from "aws-lambda";
-import {RestApi} from "aws-cdk-lib/aws-apigateway";
-import {createHTTPLambda} from "../../../infrastructure/lambda/http-lambda";
+import {middyfy, ParsedApiGatewayEvent} from "../../client/middleware";
+import {ok} from "../../client/response-utils";
+import {getEnvVariable} from "../../client/env";
 
-async function handler(event: APIGatewayProxyEvent) {
-    const {resource, path, httpMethod, headers, queryStringParameters, body} = event;
-
+async function handler(event: ParsedApiGatewayEvent) {
     const response = {
-        resource,
-        path,
-        httpMethod,
-        headers,
-        queryStringParameters,
-        body,
+        test: getEnvVariable("TESTERICA"),
+        env: process.env
     };
 
-    return {
-        body: JSON.stringify(response, null, 2),
-        statusCode: 200,
-    };
-};
+    return ok(response)
+}
 
-export const main = handler;
+export const main = middyfy(handler);

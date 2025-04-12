@@ -1,6 +1,9 @@
 import * as apigw from "aws-cdk-lib/aws-apigateway";
 import * as lambda from "aws-cdk-lib/aws-lambda";
-import lodashCamelCase from "lodash.camelcase";
+import * as iam from "aws-cdk-lib/aws-iam";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import * as path from "path";
 
 /**
  * Parameters for creating an HTTP Lambda function with API Gateway.
@@ -14,7 +17,7 @@ export interface HTTPLambdaParams {
     /**
      * Unique ID for the Lambda function. If not provided, a default one is generated.
      */
-    id?: string;
+    id: string;
 
     /**
      * The API path to associate with the Lambda function.
@@ -30,9 +33,8 @@ export interface HTTPLambdaParams {
 
     /**
      * Folder containing the Lambda function code.
-     * If not provided, defaults to the directory where this function is called.
      */
-    codeFolder?: string;
+    codeFolder: string;
 
     /**
      * The runtime environment for the Lambda function.
@@ -44,6 +46,44 @@ export interface HTTPLambdaParams {
      * Memory size for the Lambda function in MB. Defaults to 128 MB.
      */
     memorySize?: number;
+
+    /**
+     * An optional IAM role to associate with the Lambda function.
+     * If not provided, a new role will be created automatically by CDK.
+     */
+    role?: iam.Role;
+
+    /**
+     * The VPC to associate with the Lambda function.
+     * If provided, the Lambda function will be placed in this VPC.
+     */
+    vpc?: ec2.IVpc;
+
+    /**
+     * Security group to associate with the Lambda function.
+     * If not provided, no security group is associated by default.
+     */
+    securityGroup?: ec2.ISecurityGroup;
+
+    /**
+     * Subnet selection for the Lambda function's VPC placement.
+     * Default is private subnets with NAT.
+     */
+    subnetSelection?: ec2.SubnetSelection;
+
+    /**
+     * Optional environment variables to pass to the Lambda function.
+     * These can be set during the CDK deployment or manually defined as key-value pairs.
+     *
+     * @example
+     * environment: {
+     *   DATABASE_URL: "mysql://example.com/db",
+     *   STAGE: "production",
+     *   API_KEY: "my-api-key"
+     * }
+     *
+     */
+    environment?: Record<string, string>;
 }
 
 /**
@@ -72,11 +112,25 @@ export interface HTTPLambdaParams {
 export function createHTTPLambda(params: HTTPLambdaParams) {
     const { api, id, endpointPath, method, runtime, memorySize, codeFolder } = params;
 
-    const lambdaFn = new lambda.Function(api, id || lodashCamelCase(__dirname), {
-        runtime: runtime || lambda.Runtime.NODEJS_LATEST,
-        handler: "handler.main",
+
+    const lambdaFn = new NodejsFunction(api, id, {
+        entry: path.join(codeFolder, "handler.ts"), // assumes handler.ts exports 'handler'
+        handler: "main",
+        runtime: runtime || lambda.Runtime.NODEJS_20_X,
         memorySize: memorySize || 128,
-        code: lambda.Code.fromAsset(codeFolder || __dirname),
+        role: params.role,
+        environment: params.environment,
+
+        vpc: params.vpc,
+        vpcSubnets: params.subnetSelection,
+        securityGroups: params.securityGroup ? [params.securityGroup] : [],
+
+        bundling: {
+            minify: true,
+            sourceMap: true,
+            externalModules: ["aws-sdk"],
+            target: "node20",
+        },
     });
 
     const pathSegments = endpointPath.split("/").filter(Boolean);
